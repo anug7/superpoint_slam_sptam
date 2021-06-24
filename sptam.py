@@ -227,9 +227,9 @@ if __name__ == '__main__':
     
     from components import Camera
     from components import StereoFrame
-    from feature import ImageFeature
+    from feature import ImageFeature, SuperImageFeature
     from params import ParamsKITTI, ParamsEuroc
-    from dataset import KITTIOdometry, EuRoCDataset
+    from dataset import KITTIOdometry, EuRoCDataset, DepthAIOdometry, T265Odometry
     
 
     parser = argparse.ArgumentParser()
@@ -246,6 +246,14 @@ if __name__ == '__main__':
     elif args.dataset.lower() == 'euroc':
         params = ParamsEuroc()
         dataset = EuRoCDataset(args.path)
+    elif args.dataset.lower() == 'depthai':
+        params = ParamsKITTI()
+        params.descriptor_matcher = cv2.BFMatcher(crossCheck=False)
+        dataset = DepthAIOdometry(args.path)
+    elif args.dataset.lower() == 't265':
+        params = ParamsKITTI()
+        params.descriptor_matcher = cv2.BFMatcher(crossCheck=False)
+        dataset = T265Odometry(args.path)
 
     sptam = SPTAM(params)
 
@@ -264,9 +272,11 @@ if __name__ == '__main__':
 
 
     durations = []
-    for i in range(len(dataset))[:100]:
-        featurel = ImageFeature(dataset.left[i], params)
-        featurer = ImageFeature(dataset.right[i], params)
+    for i in range(len(dataset)):
+        #featurel = ImageFeature(dataset.left[i], params)
+        #featurer = ImageFeature(dataset.right[i], params)
+        featurel = SuperImageFeature(dataset.left[i], params)
+        featurer = SuperImageFeature(dataset.right[i], params, False)
         timestamp = dataset.timestamps[i]
 
         time_start = time.time()  

@@ -91,9 +91,9 @@ class KITTIOdometry(object):   # without lidar
 
         path = os.path.expanduser(path)
         timestamps = np.loadtxt(os.path.join(path, 'times.txt'))
-        self.left = ImageReader(self.listdir(os.path.join(path, 'image_2')), 
+        self.left = ImageReader(self.listdir(os.path.join(path, 'image_0')), 
             timestamps)
-        self.right = ImageReader(self.listdir(os.path.join(path, 'image_3')), 
+        self.right = ImageReader(self.listdir(os.path.join(path, 'image_1')), 
             timestamps)
 
         assert len(self.left) == len(self.right)
@@ -118,8 +118,64 @@ class KITTIOdometry(object):   # without lidar
         return len(self.left)
 
 
+class DepthAIOdometry(object):   # without lidar
+    '''
+    path example: 'path/to/your/KITTI odometry dataset/sequences/00'
+    '''
+    def __init__(self, path):
+        Cam = namedtuple('cam', 'fx fy cx cy width height baseline')
+        cam00_02 = Cam(850.37, 850.77, 633.15, 399.39, 1280, 800, 0.0742)
+
+        path = os.path.expanduser(path)
+        timestamps = np.loadtxt(os.path.join(path, 'timestamps.txt'))
+        self.left = ImageReader(self.listdir(os.path.join(path, 'left')), 
+            timestamps)
+        self.right = ImageReader(self.listdir(os.path.join(path, 'right')), 
+            timestamps)
+
+        assert len(self.left) == len(self.right)
+        self.timestamps = self.left.timestamps
+        self.cam = cam00_02 
+
+    def sort(self, xs):
+        return sorted(xs, key=lambda x:float(x[:-4]))
+
+    def listdir(self, dir):
+        files = [_ for _ in os.listdir(dir) if _.endswith('.jpg')]
+        return [os.path.join(dir, _) for _ in self.sort(files)]
+
+    def __len__(self):
+        return len(self.left)
 
 
+class T265Odometry(object):   # without lidar
+    '''
+    path example: 'path/to/your/KITTI odometry dataset/sequences/00'
+    '''
+    def __init__(self, path):
+        Cam = namedtuple('cam', 'fx fy cx cy width height baseline')
+        cam00_02 = Cam(286.162, 286.27, 417.90, 399.84, 848, 800, 0.064)
+
+        path = os.path.expanduser(path)
+        timestamps = np.loadtxt(os.path.join(path, 'timing.dat'))[:, 0]
+        self.left = ImageReader(self.listdir(os.path.join(path, 'cam0')), 
+            timestamps)
+        self.right = ImageReader(self.listdir(os.path.join(path, 'cam1')), 
+            timestamps)
+
+        assert len(self.left) == len(self.right)
+        self.timestamps = self.left.timestamps
+        self.cam = cam00_02 
+
+    def sort(self, xs):
+        return sorted(xs, key=lambda x:float(x[:-4]))
+
+    def listdir(self, dir):
+        files = [_ for _ in os.listdir(dir) if _.endswith('.png')]
+        return [os.path.join(dir, _) for _ in self.sort(files)]
+
+    def __len__(self):
+        return len(self.left)
 
 
 class Camera(object):
