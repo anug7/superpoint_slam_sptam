@@ -242,6 +242,8 @@ if __name__ == '__main__':
 
     if args.dataset.lower() == 'kitti':
         params = ParamsKITTI()
+        # Disable NORM_HUMMING when using super point
+        params.descriptor_matcher = cv2.BFMatcher(crossCheck=False)
         dataset = KITTIOdometry(args.path)
     elif args.dataset.lower() == 'euroc':
         params = ParamsEuroc()
