@@ -40,6 +40,7 @@ As shown below, all loops have been closed (loop points are marked in black).
 * point cloud:   
 ![](imgs/point_cloud.png)
 
+SuperPoint Integration: [SuperPoint ](https://github.com/magicleap/SuperPointPretrainedNetwork)is used as Visual Frontend and it's used for educational purpose only.
 
 ### TODO:
 Exhaustive evaluation on datasets. (There seems to be a python package [MichaelGrupp/evo](https://github.com/MichaelGrupp/evo) for odometry/SLAM algorithm evaluation)
